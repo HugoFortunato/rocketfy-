@@ -1,66 +1,62 @@
-import React, { useRef, useContext } from 'react';
-
-import { useDrag, useDrop } from 'react-dnd';
-
-import BoardContext from '../Board/context';
-
-import { Container, Label } from './style';
+import React, { useRef, useContext } from 'react'
+import { useDrag, useDrop } from 'react-dnd'
+import BoardContext from '../Board/context'
+import { Container, Label } from './style'
 
 export default function Card({ data, index, listIndex }) {
-    const ref = useRef();
-    const { move } = useContext(BoardContext);
+    const ref = useRef()
+    const { move } = useContext(BoardContext)
 
     const [{ isDragging }, dragRef] = useDrag({
         item: { type: 'CARD', index, listIndex },
-        collect: monitor => ({
-            isDragging: monitor.isDragging(),
-        }),
-    });
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging()
+        })
+    })
 
     const [, dropRef] = useDrop({
         accept: 'CARD',
         hover(item, monitor) {
-            const draggedListIndex = item.listIndex;
+            const draggedListIndex = item.listIndex
             //const targetListIndex  = listIndex;
-            const draggedIndex = item.index;
-            const targetIndex = index;
+            const draggedIndex = item.index
+            const targetIndex = index
 
             if (draggedIndex == targetIndex) {
-                return;
+                return
             }
 
-            const targetSize = ref.current.getBoundingClientRect();
-            const targetCenter = (targetSize.bottom - targetSize.top) / 2;
+            const targetSize = ref.current.getBoundingClientRect()
+            const targetCenter = (targetSize.bottom - targetSize.top) / 2
 
-            const draggedOffset = monitor.getClientOffset();
-            const draggedTop = draggedOffset.y - targetSize.top;
+            const draggedOffset = monitor.getClientOffset()
+            const draggedTop = draggedOffset.y - targetSize.top
 
             if (draggedIndex < targetIndex && draggedTop < targetCenter) {
-                return;
+                return
             }
 
             if (draggedIndex > targetIndex && draggedTop > targetCenter) {
-                return;
+                return
             }
 
-            move(draggedListIndex, draggedIndex, targetIndex);
+            move(draggedListIndex, draggedIndex, targetIndex)
 
             item.index = targetIndex
         }
-
     })
 
-    dragRef(dropRef(ref));
+    dragRef(dropRef(ref))
 
     return (
         <Container ref={dragRef} isDragging={isDragging}>
             <header>
-                {data.labels.map(label => <Label key={label} color={label} />)}
-
+                {data.labels.map((label) => (
+                    <Label key={label} color={label} />
+                ))}
             </header>
             <p>{data.content}</p>
-            {data.user && <img src={data.user} alt='user profile'></img>}
+            {data.user && <img src={data.user} alt="user profile"></img>}
         </Container>
-    );
+    )
 }
-
